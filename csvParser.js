@@ -128,6 +128,24 @@ function parseCSV(csvText) {
         // Keep some newlines in description but clean it
         rowObject[header] = rawValue.replace(/\r?\n/g, '\n').trim();
         rowObject[header + '_clean'] = cleanField(rawValue);
+        
+        // Extract product code from description if productCode is empty
+        if (!rowObject.productCode || rowObject.productCode.trim() === '') {
+          const ucMatch = rawValue.match(/UC-\d+/i);
+          if (ucMatch) {
+            rowObject.productCode = ucMatch[0].toUpperCase();
+          }
+          // Also check for other patterns like "การ์ด : UC-XX"
+          const cardMatch = rawValue.match(/การ์ด\s*:\s*(UC-\d+)/i);
+          if (cardMatch) {
+            rowObject.productCode = cardMatch[1].toUpperCase();
+          }
+          // Check for "รหัสแฟลชไดรฟ์ : UC-XX"
+          const flashMatch = rawValue.match(/รหัสแฟลชไดรฟ์\s*:\s*(UC-\d+)/i);
+          if (flashMatch) {
+            rowObject.productCode = flashMatch[1].toUpperCase();
+          }
+        }
       } else {
         // Clean all other fields
         rowObject[header] = cleanField(rawValue);
