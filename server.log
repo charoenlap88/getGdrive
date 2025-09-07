@@ -1,0 +1,177 @@
+
+> google-sheets-api@1.0.0 start
+> node server.js
+
+🚀 Server is running on port 3000
+📊 API endpoints:
+   GET  http://localhost:3000/api/data
+   POST http://localhost:3000/api/refresh
+   GET  http://localhost:3000/api/info
+🔗 CSV source: https://docs.google.com/spreadsheets/d/174dcynBTIagtj0JckoVh248dXXncdi0I/export?format=csv&gid=1618426698&single=true&output=csv
+📁 Local CSV file: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📖 Reading CSV file from: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📊 Read 2183 characters from CSV file
+🔧 Parsing CSV with enhanced data cleaning
+📊 Processing 2183 characters
+📋 Found 8 total rows
+📑 Clean headers: [
+  'title',
+  'image',
+  'productCode',
+  'description',
+  'priceRange',
+  'price100_300',
+  'price301_500',
+  'price501_1000'
+]
+📄 Row 1: อัพเดจราคาวันที่ 11/1/65 เจล&สเปรย์ แบรนด์ pure soft
+📄 Row 2: NO
+📄 Row 3: Unknown
+📄 Row 7: Pure Soft
+📄 Row 8: Pure Soft
+✅ Successfully parsed 8 rows with clean data
+✅ Loaded 8 rows from existing CSV file
+🔄 Fetching data from local CSV file...
+📖 Reading CSV file from: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📊 Read 2183 characters from CSV file
+🔧 Parsing CSV with enhanced data cleaning
+📊 Processing 2183 characters
+📋 Found 8 total rows
+📑 Clean headers: [
+  'title',
+  'image',
+  'productCode',
+  'description',
+  'priceRange',
+  'price100_300',
+  'price301_500',
+  'price501_1000'
+]
+📄 Row 1: อัพเดจราคาวันที่ 11/1/65 เจล&สเปรย์ แบรนด์ pure soft
+📄 Row 2: NO
+📄 Row 3: Unknown
+📄 Row 7: Pure Soft
+📄 Row 8: Pure Soft
+✅ Successfully parsed 8 rows with clean data
+✅ Successfully converted 8 rows to JSON
+⏱️ Processing time: 1ms
+🔄 Fetching data from local CSV file...
+📖 Reading CSV file from: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📊 Read 2183 characters from CSV file
+🔧 Parsing CSV with enhanced data cleaning
+📊 Processing 2183 characters
+📋 Found 8 total rows
+📑 Clean headers: [
+  'title',
+  'image',
+  'productCode',
+  'description',
+  'priceRange',
+  'price100_300',
+  'price301_500',
+  'price501_1000'
+]
+📄 Row 1: อัพเดจราคาวันที่ 11/1/65 เจล&สเปรย์ แบรนด์ pure soft
+📄 Row 2: NO
+📄 Row 3: Unknown
+📄 Row 7: Pure Soft
+📄 Row 8: Pure Soft
+✅ Successfully parsed 8 rows with clean data
+✅ Successfully converted 8 rows to JSON
+⏱️ Processing time: 0ms
+🔄 Fetching data from local CSV file...
+📖 Reading CSV file from: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📊 Read 2183 characters from CSV file
+🔧 Parsing CSV with enhanced data cleaning
+📊 Processing 2183 characters
+📋 Found 8 total rows
+📑 Clean headers: [
+  'title',
+  'image',
+  'productCode',
+  'description',
+  'priceRange',
+  'price100_300',
+  'price301_500',
+  'price501_1000'
+]
+📄 Row 1: อัพเดจราคาวันที่ 11/1/65 เจล&สเปรย์ แบรนด์ pure soft
+📄 Row 2: NO
+📄 Row 3: Unknown
+📄 Row 7: Pure Soft
+📄 Row 8: Pure Soft
+✅ Successfully parsed 8 rows with clean data
+✅ Successfully converted 8 rows to JSON
+⏱️ Processing time: 1ms
+🔄 Fetching data from local CSV file...
+📖 Reading CSV file from: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📊 Read 2183 characters from CSV file
+🔧 Parsing CSV with enhanced data cleaning
+📊 Processing 2183 characters
+📋 Found 8 total rows
+📑 Clean headers: [
+  'title',
+  'image',
+  'productCode',
+  'description',
+  'priceRange',
+  'price100_300',
+  'price301_500',
+  'price501_1000'
+]
+📄 Row 1: อัพเดจราคาวันที่ 11/1/65 เจล&สเปรย์ แบรนด์ pure soft
+📄 Row 2: NO
+📄 Row 3: Unknown
+📄 Row 7: Pure Soft
+📄 Row 8: Pure Soft
+✅ Successfully parsed 8 rows with clean data
+✅ Successfully converted 8 rows to JSON
+⏱️ Processing time: 1ms
+🔄 Fetching data from local CSV file...
+📖 Reading CSV file from: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📊 Read 2183 characters from CSV file
+🔧 Parsing CSV with enhanced data cleaning
+📊 Processing 2183 characters
+📋 Found 8 total rows
+📑 Clean headers: [
+  'title',
+  'image',
+  'productCode',
+  'description',
+  'priceRange',
+  'price100_300',
+  'price301_500',
+  'price501_1000'
+]
+📄 Row 1: อัพเดจราคาวันที่ 11/1/65 เจล&สเปรย์ แบรนด์ pure soft
+📄 Row 2: NO
+📄 Row 3: Unknown
+📄 Row 7: Pure Soft
+📄 Row 8: Pure Soft
+✅ Successfully parsed 8 rows with clean data
+✅ Successfully converted 8 rows to JSON
+⏱️ Processing time: 1ms
+🔄 Fetching data from local CSV file...
+📖 Reading CSV file from: /Users/charoenlapanatamsombat/Documents/project_/gdrive/data/sheets-data.csv
+📊 Read 2183 characters from CSV file
+🔧 Parsing CSV with enhanced data cleaning
+📊 Processing 2183 characters
+📋 Found 8 total rows
+📑 Clean headers: [
+  'title',
+  'image',
+  'productCode',
+  'description',
+  'priceRange',
+  'price100_300',
+  'price301_500',
+  'price501_1000'
+]
+📄 Row 1: อัพเดจราคาวันที่ 11/1/65 เจล&สเปรย์ แบรนด์ pure soft
+📄 Row 2: NO
+📄 Row 3: Unknown
+📄 Row 7: Pure Soft
+📄 Row 8: Pure Soft
+✅ Successfully parsed 8 rows with clean data
+✅ Successfully converted 8 rows to JSON
+⏱️ Processing time: 4ms

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบค้นหาข้อมูลตารางราคา</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header-subtitle {
+            color: #7f8c8d;
+            font-weight: 300;
+        }
+        
+        .control-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        
+        .form-select, .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-select:focus, .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .data-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .table-responsive {
+            border-radius: 10px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            position: relative;
+        }
+        
+        /* Scroll indicator */
+        .table-responsive::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background: rgba(102, 126, 234, 0.7);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z'/%3E%3C/svg%3E");
+            background-size: 16px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .table-responsive.scrollable::after {
+            opacity: 1;
+        }
+        
+        .table {
+            min-width: 800px; /* Minimum width to ensure proper display */
+            margin-bottom: 0;
+        }
+        
+        /* Custom scrollbar */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+        
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+        }
+        
+        .table thead th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+        }
+        
+        .table tbody td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        .table-row-hover:hover {
+            background-color: #e3f2fd !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        .stats-row {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .product-code {
+            background: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .price-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .description-cell {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .description-cell:hover {
+            overflow: visible;
+            white-space: normal;
+            background: #fffacd;
+            position: relative;
+            z-index: 10;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .control-section {
+                padding: 20px;
+            }
+            
+            .table-responsive {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            
+            <!-- Control Section -->
+            <div class="control-section">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label for="categorySelect" class="form-label">
+                            <i class="fas fa-list me-2"></i>เลือกหมวดหมู่
+                        </label>
+                        <select class="form-select" id="categorySelect">
+                            <option value="">กรุณาเลือกหมวดหมู่...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label for="searchInput" class="form-label">
+                            <i class="fas fa-search me-2"></i>ค้นหาสินค้า
+                        </label>
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="พิมพ์ชื่อสินค้า รหัส หรือคำอธิบาย...">
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-12 mb-3 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-primary me-2" id="loadDataBtn">
+                            <i class="fas fa-sync-alt me-2"></i>รีเฟรช
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="clearBtn">
+                            <i class="fas fa-eraser me-2"></i>ล้าง
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading Section -->
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">กำลังโหลด...</span>
+                </div>
+                <p class="mt-3 text-muted">กำลังดาวน์โหลดข้อมูล...</p>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="stats-row" id="statsSection" style="display: none;">
+                <div class="row">
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <h5 class="mb-1" id="totalItems">0</h5>
+                            <small class="text-muted">รายการทั้งหมด</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <h5 class="mb-1" id="filteredItems">0</h5>
+                            <small class="text-muted">แสดงผล</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <h5 class="mb-1" id="currentCategory">-</h5>
+                            <small class="text-muted">หมวดหมู่ปัจจุบัน</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <h5 class="mb-1" id="lastUpdate">-</h5>
+                            <small class="text-muted">อัปเดตล่าสุด</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Section -->
+            <div class="data-section">
+                
+                <div class="table-responsive" id="dataTable" style="display: none;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 60px; width: 60px;">#</th>
+                                <th style="min-width: 180px; width: 180px;">รหัสสินค้า</th>
+                                <th style="min-width: 400px; width: auto;">รายละเอียด</th>
+                                <th style="min-width: 160px; width: 160px;">
+                                    <i class="fas fa-eye me-2"></i>ดูเพิ่มเติม
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-warning" id="noDataAlert" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ไม่พบข้อมูลที่ตรงกับการค้นหา
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white;">
+                    <h5 class="modal-title" id="productDetailModalLabel">
+                        <i class="fas fa-info-circle me-2"></i>รายละเอียดสินค้า
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="productDetailContent">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>ปิด
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global variables
+        let allData = [];
+        let currentSheets = [];
+        let currentDisplayData = []; // For modal display
+        
+        // Global function for modal (accessible from onclick)
+        function showProductDetail(itemIndex) {
+            if (!currentDisplayData || !currentDisplayData[itemIndex]) {
+                console.warn('No data available for index:', itemIndex);
+                return;
+            }
+            
+            const item = currentDisplayData[itemIndex];
+            const modalBody = $('#productDetailContent');
+            
+            console.log('Showing detail for item:', item);
+            
+            // Build detail content
+            let detailHTML = `
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        ${item.image ? 
+                            `<img src="${item.image}" alt="Product" class="img-fluid rounded" style="max-height: 200px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZWVlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuC4meC5ieC4oeC4oeC4teC4o+C4ueC4lTwvdGV4dD48L3N2Zz4='">`
+                            : '<div class="text-center p-4 bg-light rounded"><i class="fas fa-image fa-3x text-muted"></i><p class="mt-2 text-muted">ไม่มีรูปภาพ</p></div>'
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <h6><i class="fas fa-barcode me-2"></i>รหัสสินค้า</h6>
+                        <p class="mb-3"><span class="product-code">${item.productCode || '-'}</span></p>
+                        
+                        <h6><i class="fas fa-align-left me-2"></i>รายละเอียด</h6>
+                        <p class="mb-0" style="white-space: pre-line;">${item.description || '-'}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Add price information if available
+            const priceFields = ['priceRange', 'price100_300', 'price301_500', 'price501_1000'];
+            let hasPriceInfo = false;
+            
+            priceFields.forEach(field => {
+                if (item[field] && item[field] !== '-') {
+                    hasPriceInfo = true;
+                }
+            });
+            
+            if (hasPriceInfo) {
+                detailHTML += `
+                    <div class="row">
+                        <div class="col-12">
+                            <h6><i class="fas fa-tags me-2"></i>ข้อมูลราคา</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                `;
+                
+                // Add price headers dynamically
+                const priceLabels = {
+                    'priceRange': 'ช่วงราคา',
+                    'price100_300': '100-300 ชิ้น',
+                    'price301_500': '301-500 ชิ้น',
+                    'price501_1000': '501-1000 ชิ้น'
+                };
+                
+                priceFields.forEach(field => {
+                    if (item[field] && item[field] !== '-') {
+                        detailHTML += `<th>${priceLabels[field]}</th>`;
+                    }
+                });
+                
+                detailHTML += `
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                `;
+                
+                // Add price values
+                priceFields.forEach(field => {
+                    if (item[field] && item[field] !== '-') {
+                        const price = formatPrice(item[field]);
+                        detailHTML += `<td><span class="price-badge">${price}</span></td>`;
+                    }
+                });
+                
+                detailHTML += `
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add any other fields (dynamic columns)
+            const standardFields = ['title', 'image', 'productCode', 'description', 'description_clean', 'priceRange', 'price100_300', 'price301_500', 'price501_1000'];
+            const otherFields = Object.keys(item).filter(key => 
+                !standardFields.includes(key) && 
+                item[key] && 
+                item[key] !== '-' && 
+                item[key] !== '' &&
+                item[key] !== 'Unknown'
+            );
+            
+            if (otherFields.length > 0) {
+                detailHTML += `
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6><i class="fas fa-list-ul me-2"></i>ข้อมูลเพิ่มเติม</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                `;
+                
+                otherFields.forEach(field => {
+                    const fieldName = field.replace(/column_\d+/, 'คอลัมน์เพิ่มเติม').replace(/_/g, ' ');
+                    detailHTML += `
+                        <tr>
+                            <td style="width: 30%; font-weight: 600;">${fieldName}</td>
+                            <td>${item[field]}</td>
+                        </tr>
+                    `;
+                });
+                
+                detailHTML += `
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modalBody.html(detailHTML);
+            $('#productDetailModal').modal('show');
+        }
+        
+        // Format price data - global function
+        function formatPrice(priceObj) {
+            if (!priceObj) return '-';
+            if (typeof priceObj === 'string') return priceObj || '-';
+            if (typeof priceObj === 'object') {
+                if (priceObj.display) return priceObj.display;
+                if (priceObj.amount) return priceObj.amount;
+            }
+            return '-';
+        }
+
+        $(document).ready(function() {
+            
+            // Initialize
+            loadSheetsList();
+            
+            // Event Listeners
+            $('#loadDataBtn').click(loadSheetData);
+            $('#clearBtn').click(clearAll);
+            $('#searchInput').on('input', filterData);
+            $('#categorySelect').change(function() {
+                if ($(this).val()) {
+                    $('#loadDataBtn').prop('disabled', false);
+                    // โหลดข้อมูลอัตโนมัติเมื่อเลือกหมวด
+                    loadSheetData();
+                } else {
+                    $('#loadDataBtn').prop('disabled', true);
+                    clearAll();
+                }
+            });
+            
+            // Load sheets list from API
+            async function loadSheetsList() {
+                try {
+                    console.log('📋 Loading sheets list...');
+                    
+                    // First, try to download config
+                    try {
+                        await $.ajax({
+                            url: '/api/download-config',
+                            method: 'POST'
+                        });
+                        console.log('✅ Config downloaded');
+                    } catch (e) {
+                        console.log('⚠️ Config already exists or failed to download');
+                    }
+                    
+                    // Then get sheets list
+                    const response = await $.ajax({
+                        url: '/api/sheets',
+                        method: 'GET'
+                    });
+                    
+                    currentSheets = response.sheets;
+                    populateCategories(currentSheets);
+                    
+                } catch (error) {
+                    console.error('Error loading sheets:', error);
+                    showAlert('error', 'ไม่สามารถโหลดรายการหมวดหมู่ได้: ' + error.responseJSON?.message);
+                }
+            }
+            
+            // Populate category dropdown
+            function populateCategories(sheets) {
+                const $select = $('#categorySelect');
+                $select.empty().append('<option value="">กรุณาเลือกหมวดหมู่...</option>');
+                
+                sheets.forEach(sheet => {
+                    $select.append(`<option value="${sheet.gid}">${sheet.name}</option>`);
+                });
+                
+                console.log(`📋 Loaded ${sheets.length} categories`);
+            }
+            
+            // Load data for selected sheet
+            async function loadSheetData() {
+                const selectedGid = $('#categorySelect').val();
+                if (!selectedGid) {
+                    showAlert('warning', 'กรุณาเลือกหมวดหมู่ก่อน');
+                    return;
+                }
+                
+                const selectedSheet = currentSheets.find(s => s.gid === selectedGid);
+                if (!selectedSheet) return;
+                
+                showLoading(true);
+                hideAlerts();
+                
+                try {
+                    console.log(`📊 Loading data for: ${selectedSheet.name} (${selectedGid})`);
+                    
+                    const response = await $.ajax({
+                        url: `/api/data?sheet_gid=${selectedGid}`,
+                        method: 'GET'
+                    });
+                    
+                    allData = response.data || [];
+                    updateStats(selectedSheet.name, response.totalRows, response.lastUpdated);
+                    displayData(allData);
+                    
+                    console.log(`✅ Loaded ${allData.length} items`);
+                    
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showAlert('error', 'ไม่สามารถโหลดข้อมูลได้: ' + (error.responseJSON?.message || error.message));
+                } finally {
+                    showLoading(false);
+                }
+            }
+            
+            // Display data in table
+            function displayData(data) {
+                const $tbody = $('#dataTableBody');
+                $tbody.empty();
+                
+                if (!data || data.length === 0) {
+                    $('#dataTable').hide();
+                    $('#noDataAlert').show();
+                    return;
+                }
+                
+                console.log('📊 Raw data received:', data.length, 'items');
+                console.log('📄 Sample items:', data.slice(0, 3));
+                
+                // Enhanced filtering for different sheet structures
+                const validData = data.filter(item => {
+                    // Skip obvious header rows
+                    if (!item || typeof item !== 'object') return false;
+                    
+                    const productCode = item.productCode || '';
+                    
+                    // Skip clear header indicators
+                    if (productCode.includes('รหัสสินค้า') || 
+                        productCode.includes('รูปภาพ') ||
+                        productCode.includes('NO') && productCode.length < 10) {
+                        return false;
+                    }
+                    
+                    // Check if item has any meaningful content
+                    const hasContent = (
+                        (productCode && productCode.trim() !== '') ||
+                        (item.description && item.description.trim() !== '' && item.description !== 'Unknown') ||
+                        (item.title && item.title.trim() !== '' && !item.title.includes('ตารางราคา'))
+                    );
+                    
+                    // Allow items with some price information even if other fields are weak
+                    const hasPriceInfo = (
+                        (item.priceRange && item.priceRange !== '-') ||
+                        (item.price100_300 && item.price100_300 !== '-') ||
+                        (item.price301_500 && item.price301_500 !== '-') ||
+                        (item.price501_1000 && item.price501_1000 !== '-')
+                    );
+                    
+                    return hasContent || hasPriceInfo;
+                });
+                
+                console.log('✅ Filtered data:', validData.length, 'valid items');
+                if (validData.length > 0) {
+                    console.log('📄 Sample valid items:', validData.slice(0, 2));
+                }
+                
+                if (validData.length === 0) {
+                    console.warn('⚠️ No valid data found after filtering');
+                    $('#dataTable').hide();
+                    $('#noDataAlert').show();
+                    return;
+                }
+                
+                // Store current display data for modal
+                currentDisplayData = validData;
+                
+                validData.forEach((item, index) => {
+                    const row = createTableRow(item, index + 1);
+                    $tbody.append(row);
+                });
+                
+                $('#dataTable').show();
+                $('#noDataAlert').hide();
+                updateFilteredCount(validData.length);
+                
+                // Setup scroll indicator
+                setupScrollIndicator();
+            }
+            
+            // Create table row
+            function createTableRow(item, index) {
+                // Enhanced data extraction for different sheet formats
+                let productCode = item.productCode || '';
+                let description = item.description_clean || item.description || '';
+                let image = item.image || '';
+                
+                // Handle "Unknown" productCode by trying to find meaningful identifier
+                if (!productCode || productCode === 'Unknown' || productCode.trim() === '') {
+                    // Try to find product code in description or title
+                    const descText = description.toLowerCase();
+                    if (descText.includes('รหัสสินค้า :')) {
+                        const match = descText.match(/รหัสสินค้า\s*:\s*([^\s\n]+)/);
+                        if (match) productCode = match[1];
+                    } else if (item.title && item.title !== 'Unknown') {
+                        productCode = item.title;
+                    } else {
+                        productCode = `#${index}`;
+                    }
+                }
+                
+                // Handle empty description
+                if (!description || description === 'Unknown' || description.trim() === '') {
+                    if (item.title && !item.title.includes('ตารางราคา')) {
+                        description = item.title;
+                    } else {
+                        // Try to build description from available fields
+                        const parts = [];
+                        Object.keys(item).forEach(key => {
+                            if (key !== 'productCode' && key !== 'title' && key !== 'image' && 
+                                item[key] && item[key] !== '-' && item[key] !== 'Unknown' && 
+                                typeof item[key] === 'string' && item[key].length > 5) {
+                                parts.push(item[key]);
+                            }
+                        });
+                        description = parts.join(' | ') || 'ไม่มีรายละเอียด';
+                    }
+                }
+                
+                const shortDescription = description.length > 100 ? 
+                    description.substring(0, 100) + '...' : description;
+                
+                return `
+                    <tr style="cursor: pointer;" onclick="showProductDetail(${index - 1})" class="table-row-hover">
+                        <td><strong>${index}</strong></td>
+                        <td>
+                            <span class="product-code">${productCode}</span>
+                        </td>
+                        <td>
+                            <div class="description-cell" title="${description}">
+                                ${shortDescription}
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showProductDetail(${index - 1})">
+                                <i class="fas fa-eye me-1"></i>ดูรายละเอียด
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            
+            // Filter data based on search
+            function filterData() {
+                const searchTerm = $('#searchInput').val().toLowerCase().trim();
+                
+                if (!searchTerm) {
+                    displayData(allData);
+                    return;
+                }
+                
+                const filteredData = allData.filter(item => {
+                    const productCode = (item.productCode || '').toLowerCase();
+                    const description = (item.description_clean || item.description || '').toLowerCase();
+                    
+                    return productCode.includes(searchTerm) || 
+                           description.includes(searchTerm);
+                });
+                
+                displayData(filteredData);
+                console.log(`🔍 Filtered: ${filteredData.length} items for "${searchTerm}"`);
+            }
+            
+            // Update statistics
+            function updateStats(categoryName, total, lastUpdate) {
+                $('#currentCategory').text(categoryName);
+                $('#totalItems').text(total || 0);
+                $('#lastUpdate').text(formatDateTime(lastUpdate));
+                $('#statsSection').show();
+            }
+            
+            // Update filtered count
+            function updateFilteredCount(count) {
+                $('#filteredItems').text(count);
+            }
+            
+            // Format date time
+            function formatDateTime(dateString) {
+                if (!dateString) return '-';
+                try {
+                    const date = new Date(dateString);
+                    return date.toLocaleString('th-TH', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } catch (e) {
+                    return '-';
+                }
+            }
+            
+            // Show/hide loading
+            function showLoading(show) {
+                if (show) {
+                    $('#loadingSpinner').show();
+                    $('#loadDataBtn').prop('disabled', true);
+                } else {
+                    $('#loadingSpinner').hide();
+                    $('#loadDataBtn').prop('disabled', false);
+                }
+            }
+            
+            // Show alert
+            function showAlert(type, message) {
+                hideAlerts();
+                const alertClass = type === 'error' ? 'alert-danger' : 
+                                  type === 'warning' ? 'alert-warning' : 'alert-info';
+                const icon = type === 'error' ? 'fa-exclamation-circle' : 
+                            type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+                
+                const alertHtml = `
+                    <div class="alert ${alertClass}" id="dynamicAlert">
+                        <i class="fas ${icon} me-2"></i>${message}
+                    </div>
+                `;
+                
+                $('#infoAlert').after(alertHtml);
+                setTimeout(() => $('#dynamicAlert').fadeOut(), 5000);
+            }
+            
+            // Hide alerts
+            function hideAlerts() {
+                $('#infoAlert').hide();
+                $('#dynamicAlert').remove();
+            }
+            
+            // Setup scroll indicator
+            function setupScrollIndicator() {
+                setTimeout(() => {
+                    const tableContainer = document.querySelector('.table-responsive');
+                    if (tableContainer) {
+                        const table = tableContainer.querySelector('table');
+                        if (table && tableContainer.scrollWidth > tableContainer.clientWidth) {
+                            tableContainer.classList.add('scrollable');
+                            
+                            // Hide indicator when scrolled to the end
+                            tableContainer.addEventListener('scroll', function() {
+                                const isScrolledToEnd = this.scrollLeft >= (this.scrollWidth - this.clientWidth - 10);
+                                if (isScrolledToEnd) {
+                                    this.classList.remove('scrollable');
+                                } else {
+                                    this.classList.add('scrollable');
+                                }
+                            });
+                        } else {
+                            tableContainer.classList.remove('scrollable');
+                        }
+                    }
+                }, 100);
+            }
+            
+            // Clear all
+            function clearAll() {
+                $('#categorySelect').val('');
+                $('#searchInput').val('');
+                $('#dataTable').hide();
+                $('#noDataAlert').hide();
+                $('#statsSection').hide();
+                allData = [];
+                currentDisplayData = [];
+                $('#loadDataBtn').prop('disabled', true);
+                
+                // Remove scroll indicator
+                const tableContainer = document.querySelector('.table-responsive');
+                if (tableContainer) {
+                    tableContainer.classList.remove('scrollable');
+                }
+                
+                console.log('🧹 Cleared all data');
+            }
+        });
+    </script>
+</body>
+</html>

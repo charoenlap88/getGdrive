@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets CSV API v2.0</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .button.refresh {
+            background-color: #2196F3;
+        }
+        .button.refresh:hover {
+            background-color: #1976D2;
+        }
+        .button.info {
+            background-color: #FF9800;
+        }
+        .button.info:hover {
+            background-color: #F57C00;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #388e3c;
+            background-color: #e8f5e8;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .performance {
+            background-color: #e8f4fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #2196F3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+        .info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .version {
+            background-color: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Google Sheets CSV to JSON API v2.0</h1>
+        
+        <div class="version">
+            ⚡ New: Local CSV Storage + Ultra-Fast Processing (1ms!)
+        </div>
+        
+        <div class="info">
+            <strong>📊 ข้อมูลจาก:</strong> ตารางราคา อัพเดจ 27-1-65.xlsx<br>
+            <strong>🔗 Source:</strong> <a href="https://docs.google.com/spreadsheets/d/174dcynBTIagtj0JckoVh248dXXncdi0I/htmlview#gid=1618426698" target="_blank">Google Sheets</a><br>
+            <strong>💾 Storage:</strong> Local CSV File (ultra-fast access)<br>
+            <strong>🔄 Refresh:</strong> On-demand from Google Sheets
+        </div>
+
+        <button class="button" onclick="fetchData()">📥 ดึงข้อมูลจาก Local CSV</button>
+        <button class="button refresh" onclick="refreshData()">🔄 รีเฟรชจาก Google Sheets</button>
+        <button class="button info" onclick="getFileInfo()">📁 ข้อมูล CSV File</button>
+        <button class="button" onclick="testHealth()">❤️ ตรวจสอบสถานะ API</button>
+
+        <div id="status"></div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        
+        function setStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function setResult(content) {
+            document.getElementById('result').innerHTML = content;
+        }
+
+        async function fetchData() {
+            setStatus('⏳ กำลังดึงข้อมูลจาก Local CSV...', 'loading');
+            setResult('');
+            
+            const startTime = Date.now();
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/data`);
+                const data = await response.json();
+                
+                const clientTime = Date.now() - startTime;
+                
+                if (data.success) {
+                    setStatus(`✅ สำเร็จ! ดึงข้อมูลได้ ${data.totalRows} แถว`, 'success');
+                    
+                    // Show performance info
+                    const perfInfo = `
+                        <div class="performance">
+                            ⚡ <strong>Performance:</strong> Server ${data.processingTime} + Network ${clientTime}ms = Total ${clientTime}ms<br>
+                            📁 <strong>Source:</strong> ${data.source} (${(data.fileSize/1024).toFixed(1)}KB)<br>
+                            🕐 <strong>Last Updated:</strong> ${new Date(data.lastUpdated).toLocaleString('th-TH')}
+                        </div>
+                    `;
+                    setResult(perfInfo);
+                    
+                    displayData(data);
+                } else {
+                    setStatus(`❌ เกิดข้อผิดพลาด: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                setStatus(`❌ ไม่สามารถเชื่อมต่อ API ได้: ${error.message}`, 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        async function refreshData() {
+            setStatus('🔄 กำลังรีเฟรชข้อมูลจาก Google Sheets...', 'loading');
+            setResult('');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/refresh`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    setStatus(`✅ รีเฟรชสำเร็จ! อัปเดตข้อมูล ${data.totalRows} แถว`, 'success');
+                    setResult(`
+                        <div class="success">
+                            <h3>🔄 รีเฟรชข้อมูลสำเร็จ</h3>
+                            <ul>
+                                <li><strong>จำนวนแถว:</strong> ${data.totalRows}</li>
+                                <li><strong>เวลารีเฟรช:</strong> ${new Date(data.refreshTime).toLocaleString('th-TH')}</li>
+                                <li><strong>ข้อมูลใหม่:</strong> พร้อมใช้งานแล้ว</li>
+                            </ul>
+                            <p><em>คลิก "ดึงข้อมูลจาก Local CSV" เพื่อดูข้อมูลใหม่</em></p>
+                        </div>
+                    `);
+                } else {
+                    setStatus(`❌ รีเฟรชล้มเหลว: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                setStatus(`❌ ไม่สามารถรีเฟรชข้อมูลได้: ${error.message}`, 'error');
+            }
+        }
+
+        async function getFileInfo() {
+            setStatus('📁 กำลังตรวจสอบข้อมูล CSV file...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/info`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    setStatus('✅ ได้ข้อมูล CSV file แล้ว', 'success');
+                    setResult(`
+                        <h3>📁 ข้อมูล CSV File</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>💾 Local File</h4>
+                                <ul>
+                                    <li><strong>สถานะ:</strong> ${data.csvFile.exists ? '✅ พบไฟล์' : '❌ ไม่พบไฟล์'}</li>
+                                    <li><strong>ขนาด:</strong> ${(data.csvFile.size/1024).toFixed(1)} KB</li>
+                                    <li><strong>แก้ไขล่าสุด:</strong> ${data.csvFile.modified ? new Date(data.csvFile.modified).toLocaleString('th-TH') : 'N/A'}</li>
+                                    <li><strong>Path:</strong> <small>${data.csvFile.path}</small></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>💭 Cache Status</h4>
+                                <ul>
+                                    <li><strong>มีข้อมูล:</strong> ${data.cache.hasData ? '✅ พร้อมใช้งาน' : '❌ ยังไม่โหลด'}</li>
+                                    <li><strong>จำนวนแถว:</strong> ${data.cache.rowCount}</li>
+                                    <li><strong>โหลดล่าสุด:</strong> ${data.cache.lastLoaded ? new Date(data.cache.lastLoaded).toLocaleString('th-TH') : 'N/A'}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <h4>🔗 Google Sheets Source</h4>
+                        <ul>
+                            <li><strong>Spreadsheet ID:</strong> ${data.googleSheets.spreadsheetId}</li>
+                            <li><strong>Sheet GID:</strong> ${data.googleSheets.sheetGid}</li>
+                            <li><strong>CSV URL:</strong> <small>${data.googleSheets.csvUrl}</small></li>
+                        </ul>
+                    `);
+                } else {
+                    setStatus('❌ ไม่สามารถดึงข้อมูลไฟล์ได้', 'error');
+                }
+            } catch (error) {
+                setStatus(`❌ เกิดข้อผิดพลาด: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHealth() {
+            setStatus('⏳ กำลังตรวจสอบสถานะ API...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (data.status === 'OK') {
+                    setStatus('✅ API ทำงานปกติ', 'success');
+                    setResult(`
+                        <h3>🩺 สถานะระบบ</h3>
+                        <ul>
+                            <li><strong>สถานะ:</strong> ${data.status}</li>
+                            <li><strong>เวลา:</strong> ${new Date(data.timestamp).toLocaleString('th-TH')}</li>
+                            <li><strong>Cache:</strong> ${data.cache.hasData ? `✅ มีข้อมูล ${data.cache.rowCount} แถว` : '❌ ยังไม่มีข้อมูล'}</li>
+                        </ul>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `);
+                } else {
+                    setStatus('⚠️ API มีปัญหา', 'error');
+                }
+            } catch (error) {
+                setStatus(`❌ ไม่สามารถเชื่อมต่อ API ได้: ${error.message}`, 'error');
+            }
+        }
+
+        function displayData(apiResponse) {
+            const data = apiResponse.data;
+            
+            if (!data || data.length === 0) {
+                setResult(document.getElementById('result').innerHTML + '<p>ไม่พบข้อมูล</p>');
+                return;
+            }
+
+            // Create table
+            let tableHTML = `
+                <h3>📋 ข้อมูลสินค้า Pure Soft (${data.length} รายการ)</h3>
+                <table>
+                    <thead>
+                        <tr>
+            `;
+
+            // Get headers from first row
+            const headers = Object.keys(data[0]);
+            headers.slice(0, 4).forEach(header => { // Show first 4 columns only
+                const displayHeader = header.includes('pure soft') ? 'รายการ' : 
+                                    header === '' ? 'คอลัมน์' : header;
+                tableHTML += `<th>${displayHeader}</th>`;
+            });
+
+            tableHTML += `
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Add data rows (skip header rows, show products only)
+            data.slice(3).forEach(row => { // Skip first 3 header rows
+                const values = Object.values(row).slice(0, 4);
+                if (values[0] && values[0].match(/^\d+$/)) { // Only show product rows
+                    tableHTML += '<tr>';
+                    values.forEach(value => {
+                        const displayValue = value ? value.substring(0, 100) + (value.length > 100 ? '...' : '') : '';
+                        tableHTML += `<td>${displayValue}</td>`;
+                    });
+                    tableHTML += '</tr>';
+                }
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            // Add raw JSON data
+            const rawData = `
+                <h3>🔧 Complete API Response</h3>
+                <pre>${JSON.stringify(apiResponse, null, 2)}</pre>
+            `;
+
+            const currentResult = document.getElementById('result').innerHTML;
+            setResult(currentResult + tableHTML + rawData);
+        }
+
+        // Auto-load data when page loads
+        window.addEventListener('load', () => {
+            setTimeout(fetchData, 500);
+        });
+    </script>
+</body>
+</html>
