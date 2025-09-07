@@ -501,6 +501,24 @@
         }
 
         $(document).ready(function() {
+            console.log('🚀 Application started');
+            
+            // Detect base path and create API URL helper
+            const BASE_PATH = detectBasePath();
+            console.log(`🌐 Base path detected: ${BASE_PATH}`);
+            
+            function detectBasePath() {
+                // Check if running under subdirectory
+                const path = window.location.pathname;
+                if (path.startsWith('/gdrive')) {
+                    return '/gdrive';
+                }
+                return '';
+            }
+            
+            window.getApiUrl = function(endpoint) {
+                return `${BASE_PATH}/api/${endpoint}`;
+            };
             
             // Initialize
             loadSheetsList();
@@ -528,7 +546,7 @@
                     // First, try to download config
                     try {
                         await $.ajax({
-                            url: '/api/download-config',
+                            url: getApiUrl('download-config'),
                             method: 'POST'
                         });
                         console.log('✅ Config downloaded');
@@ -538,7 +556,7 @@
                     
                     // Then get sheets list
                     const response = await $.ajax({
-                        url: '/api/sheets',
+                        url: getApiUrl('sheets'),
                         method: 'GET'
                     });
                     
@@ -581,7 +599,7 @@
                     console.log(`📊 Loading data for: ${selectedSheet.name} (${selectedGid})`);
                     
                     const response = await $.ajax({
-                        url: `/api/data?sheet_gid=${selectedGid}`,
+                        url: getApiUrl(`data?sheet_gid=${selectedGid}`),
                         method: 'GET'
                     });
                     
